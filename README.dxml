@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sec lang="ja">
+  <title>cnode</title>
+  Simple implementation of GUI Component Framework.
+
+  This package is powered by [domlib](ws:/dom/domlib) .
+</sec>
