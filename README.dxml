@@ -4,4 +4,14 @@
   Simple implementation of GUI Component Framework.
 
   This package is powered by [domlib](ws:/dom/domlib) .
+  <sec>
+    <title>Create Components with DSL</title>
+    ``` typescript
+    const component = cnodeManager.create({c,$$,$}=>c(['div', {class: 'foo'},
+      $('some-value-to-text', {}),
+      $$('placeholder-some'),
+      c('nestedComponent', ['div', {class: 'bar'}])
+    ]));
+    ```
+  </sec>
 </sec>
