@@ -8,8 +8,8 @@ import { gensym } from "@looper-utils/string";
 
 export class CNodeManager extends WithFeatures(Qoop(Object), FNodeManager, FMarkerManager, FBuilder)
 {
-  @Prop() logger!: Logger;
-  @Prop() window!: IWindow;
+  @Prop() declare logger: Logger;
+  @Prop() declare window: IWindow;
   get document(): Document { return this.window.document; }
   static getCurrentManager = getCurrentManager;
   //////////////////////////////////////////////////////////////////////////////

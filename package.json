@@ -25,6 +25,7 @@
     "qoop": "*"
   },
   "devDependencies": {
+    "dom-processor": "*",
     "@types/bun": "latest",
     "@vitest/coverage-v8": "latest",
     "depcheck": "latest",

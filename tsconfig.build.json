@@ -33,7 +33,8 @@
 
     "baseUrl": ".",
     "paths" : {
-      "@src/*": ["src/*"]
+      "@src/*": ["src/*"],
+      "@test-lib/*": ["test/lib"]
     }
   },
   "include" : [

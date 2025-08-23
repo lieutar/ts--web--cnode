@@ -1,5 +1,5 @@
 import { type AbstractComponentStubParamsType, } from "../types";
-import { AbstractCNode, type AbstractCNodeParamsType } from "./AbstractCNode";
+import { AbstractCNode, type AbstractCNodeParams } from "./AbstractCNode";
 import { PlaceholderLogic } from "./compositions/PlaceholderLogic";
 import { TextCNode } from "./TextCNode";
 
@@ -13,7 +13,7 @@ export type PlaceholderDSLType  = [PlaceholderStubParamsType | string];
 export type DisposeOptionsType = {keepAlive: boolean};
 export const disposeOptionsDefault = {keepAlive: false};
 
-export type PlaceholderParamsType = AbstractCNodeParamsType & {
+export type PlaceholderParamsType = AbstractCNodeParams & {
   begin: Node,
   end: Node,
   contents?: AbstractCNode[] | null

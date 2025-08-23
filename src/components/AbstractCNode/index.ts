@@ -1,26 +1,33 @@
-import { type ICNodeDSLComponentNode } from "../types";
-import {CNodeManager } from "../manager";
-import type { AbstractComponentPartsParamsType } from "./compositions/AbstractComponentParts";
+import { type ICNodeDSLComponentNode } from "../../types";
+import {CNodeManager } from "../../manager";
+import type { AbstractComponentPartsParamsType } from "../compositions/AbstractComponentParts";
+import { Prop, QoopObject, Setter } from "qoop";
+import type { PPick } from "@looper-utils/types";
 
-export type AbstractCNodeParamsType = {
-  id?: string | null,
-  parent?: AbstractCNode | null,
-  manager: CNodeManager,
-  name?: string | null
+
+export interface AbstractCNodeProps {
+  id: string;
+  parent: AbstractCNode | null;
+  manager: CNodeManager;
+  name: string;
 };
 
-export abstract class AbstractCNode implements ICNodeDSLComponentNode{
+export type AbstractCNodeParams = PPick<AbstractCNodeProps, 'manager'>;
+
+export abstract class AbstractCNode extends QoopObject() implements ICNodeDSLComponentNode{
 
   get __brand_ICNodeDSLComponentNode(){ return true as true; }
 
-  private _manager: CNodeManager;
-  get manager(){ return this._manager as CNodeManager; }
+  @Prop() declare manager: CNodeManager;
   get logger(){ return this.manager.logger; }
 
-  private _id: string;
-  get id() { return this._id; }
-  private _name: string;
-  get name(){ return this._name; }
+  @Prop() declare id: string;
+  @Prop() declare name: string;
+  @Prop() declare parent: AbstractCNode | null;
+  @Setter('parent') setParent(_parent: AbstractCNode | null){ throw new Error(); }
+  get isRoot() : boolean{
+    this.requiresAlive();
+    return this.parent === null; }
 
   get isAnonymous(){ return this._id === this._name; }
 
@@ -28,24 +35,12 @@ export abstract class AbstractCNode implements ICNodeDSLComponentNode{
   get original(){ return this._original; }
   setOriginal(original: AbstractCNode){ this._original = original; }
 
-  private _parent: AbstractCNode | null;
-  get parent() : AbstractCNode | null{
-    this.requiresAlive();
-    return this._parent ?? null; }
-
-  setParent(parent: AbstractCNode | null){
-    this.requiresAlive();
-    this._parent = parent; }
-
-  get isRoot() : boolean{
-    this.requiresAlive();
-    return this.parent === null; }
 
   private _isAvailable: boolean = true;
 
   get isAvailable(){ return this._isAvailable; }
 
-  toString(){
+  override toString(){
     const name = this.name === this.id ? '' : `name="${this.name}" `;
     return `<${this.constructor.name} ${name} id="${this.id}"/>`
   }
@@ -103,11 +98,12 @@ export abstract class AbstractCNode implements ICNodeDSLComponentNode{
       requiresAlive:   ()=>this.requiresAlive(),
       assertAvailable: async ()=>await this.assertAvailable() }; }
 
-  constructor (params: AbstractCNodeParamsType){
-    this._parent   = params.parent ?? null;
-    this._manager  = params.manager as CNodeManager;
-    this._id       = params.id   ?? params.manager.gensym();
-    this._name     = params.name ?? this._id;
+  constructor (params: AbstractCNodeParams){
+    const manager = params.manager;
+    const id      = params.id ?? manager.gensym();
+    const parent  =  params.parent ?? null;
+    const name    = params.name ?? id;
+    super({manager, id, name, parent});
   }
 
   abstract getWholeNodes(): Promise<Node>;

@@ -1,6 +1,6 @@
 import type { AttributeSpecType } from "domlib";
 import type { AbstractComponentStubParamsType } from "../types";
-import { AbstractCNode, type AbstractCNodeParamsType } from "./AbstractCNode";
+import { AbstractCNode, type AbstractCNodeParams } from "./AbstractCNode";
 import { ElementHolder } from "./compositions/ElementHolder";
 import { PlaceholderLogic } from "./compositions/PlaceholderLogic";
 
@@ -15,7 +15,7 @@ export type TextCNodeDSLOptType = TextCNodeUniqueType & {
   attributes?: AttributeSpecType
 };
 
-export type TextCNodeParamsType = AbstractCNodeParamsType & TextCNodeDSLOptType & { element: Element };
+export type TextCNodeParamsType = AbstractCNodeParams & TextCNodeDSLOptType & { element: Element };
 
 export type TextCNodeStubParamsType = AbstractComponentStubParamsType & TextCNodeDSLOptType & { id: string };
 

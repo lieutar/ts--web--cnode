@@ -1,11 +1,11 @@
 import { type CNodeSpecType } from "../types";
-import { AbstractCNode, type AbstractCNodeParamsType } from "./AbstractCNode";
+import { AbstractCNode, type AbstractCNodeParams } from "./AbstractCNode";
 import { ElementHolder } from "./compositions/ElementHolder";
 import type { DisposeOptionsType, Placeholder } from "./Placeholder";
 import type { TextCNode } from "./TextCNode";
 import { buildGenericCNode } from "./util";
 
-export type GenericCNodeParamsType = AbstractCNodeParamsType & {
+export type GenericCNodeParamsType = AbstractCNodeParams & {
   element:      Element,
   placeholders: PlaceholderDictType,
   textCNodes:   TextCNodeDictType
