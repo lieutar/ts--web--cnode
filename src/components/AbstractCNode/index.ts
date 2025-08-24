@@ -1,9 +1,11 @@
 import { type ICNodeDSLComponentNode } from "../../types";
 import {CNodeManager } from "../../manager";
 import type { AbstractComponentPartsParamsType } from "../compositions/AbstractComponentParts";
-import { Prop, QoopObject, Setter } from "qoop";
+import { Prop, QoopObject, Setter, WithFeatures } from "qoop";
 import type { PPick } from "@looper-utils/types";
-
+import { FOriginalHolder } from "./FOriginalHolder";
+import { FDOMBusy } from "./FDOMBusy";
+import { FDisposable } from "./FDisposable";
 
 export interface AbstractCNodeProps {
   id: string;
@@ -14,7 +16,10 @@ export interface AbstractCNodeProps {
 
 export type AbstractCNodeParams = PPick<AbstractCNodeProps, 'manager'>;
 
-export abstract class AbstractCNode extends QoopObject() implements ICNodeDSLComponentNode{
+export abstract class AbstractCNode
+ extends WithFeatures( QoopObject(), FOriginalHolder, FDOMBusy, FDisposable )
+ implements ICNodeDSLComponentNode
+{
 
   get __brand_ICNodeDSLComponentNode(){ return true as true; }
 
@@ -29,66 +34,12 @@ export abstract class AbstractCNode extends QoopObject() implements ICNodeDSLCom
     this.requiresAlive();
     return this.parent === null; }
 
-  get isAnonymous(){ return this._id === this._name; }
-
-  private _original: AbstractCNode = this;
-  get original(){ return this._original; }
-  setOriginal(original: AbstractCNode){ this._original = original; }
-
-
-  private _isAvailable: boolean = true;
-
-  get isAvailable(){ return this._isAvailable; }
+  get isAnonymous(){ return this.id === this.name; }
 
   override toString(){
     const name = this.name === this.id ? '' : `name="${this.name}" `;
     return `<${this.constructor.name} ${name} id="${this.id}"/>`
   }
-
-  protected _domReadyPromise:          Promise<void> | null = null;
-  protected _domReadyPromise_resolver: (() => void)  | null = null;
-  protected _domReadyPromise_rejector: ((reason?: any) => void) | null = null;
-
-  get isDOMBusy(){ return this._domReadyPromise !== null; }
-
-  protected _setDOMBusy(): void {
-    if (this.isDOMBusy) {
-      console.warn(`Component '${this.id}' is already busy.`);
-      return;
-    }
-    this.manager.logger.tag('DOMBusy').debug(`_setDOMBusy ${this}`);
-    this._domReadyPromise = new Promise((resolve, reject) => {
-      this._domReadyPromise_resolver = resolve;
-      this._domReadyPromise_rejector = reject;
-    });
-  }
-
-  protected _resolveDOMBusy(): void {
-    if (!this.isDOMBusy) {
-      console.warn(`Component '${this.id}' was not busy.`);
-      return;
-    }
-    this.manager.logger.tag('DOMBusy').debug(`_resolveDOMBusy ${this}`);
-    if (this._domReadyPromise_resolver) {
-      this._domReadyPromise_resolver();
-      this._domReadyPromise_resolver = null;
-      this._domReadyPromise_rejector = null;
-    }
-  }
-
-  requiresAlive(){
-    if(!this.isAvailable) throw new Error( `Dead component` ); }
-
-  async assertAvailable(){
-    this.requiresAlive();
-    if(!this.isDOMBusy) return;
-    await this._domReadyPromise;
-  }
-
-  async dispose(){
-    await this.assertAvailable();
-    await this.purgeManagedNodesFromParent();
-    this._isAvailable = false; }
 
   protected _partsParams(): AbstractComponentPartsParamsType{
     return {
